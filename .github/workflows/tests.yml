@@ -1,0 +1,20 @@
+name: tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 2 * * *"        # daily: the live API and the examples still work
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: API reachable from the internet
+        run: curl -sf https://desktop-0fv3bsf.taila5ef2b.ts.net/data/v1/healthz
+      - run: pip install "quantvn>=0.3.0" pytest
+      - run: pytest -q
+      - run: python examples/01_data.py && python examples/02_paper_perp.py && python examples/03_backtest_spot.py
